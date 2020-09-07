@@ -25,9 +25,9 @@ class Category(models.Model):
 	def __str__(self):
 		return self.name
 
+
 class Product(models.Model):
 
-# 
 	class Meta:
 		abstract = True
 
@@ -45,6 +45,37 @@ class Product(models.Model):
 # this for admin part
 	def __str__(self):
 		return self.title
+
+class NoteBook(Product):
+
+	diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
+	display_type = models.CharField(max_length=255, verbose_name='Тип дисплея')
+	processor_freq = models.CharField(max_length=255, verbose_name='Частота процессора')
+	ram = models.CharField(max_length=255, verbose_name='Оперативная память')
+	video = models.CharField(max_length=255, verbose_name='Видеокарта')
+	time_without_charge = models.CharField(max_length=255, verbose_name='Заряд батареи')
+
+# this for admin part
+	def __str__(self):
+		return "".format(self.category.name, self.title)
+
+
+class Smartphone(Product):
+
+	diagonal = models.CharField(max_length=255, verbose_name='Диагональ')
+	display_type = models.CharField(max_length=255, verbose_name='Тип дисплея')
+	resolution = models.CharField(max_length=255, verbose_name='Разрешение экрана')
+	accum_volume = models.CharField(max_length=255, verbose_name='Объем батареи')
+	ram = models.CharField(max_length=255, verbose_name='Оперативная память')
+	sd = models.BooleanField(default=True)
+	cd_volume_max = models.CharField(max_length=255, verbose_name='Максимальный объем CD карты')
+	main_cam_mp = models.CharField(max_length=255, verbose_name='Главная камера')
+	frontal_cam_mp = models.CharField(max_length=255, verbose_name='Фронтальная камера')
+
+# this for admin part
+	def __str__(self):
+		return "".format(self.category.name, self.title)
+
 
 class CartProduct(models.Model):
 
@@ -65,6 +96,7 @@ class CartProduct(models.Model):
 	qty = models.PositiveIntegerField(default=1)
 	final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена')
 
+# this for admin part
 	def __str__(self):
 		return "Продукт: {0} (для корзины)".format(self.product.title)
 
@@ -78,8 +110,10 @@ class Cart(models.Model):
 	total_products = models.PositiveIntegerField(default=0)
 	final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена')
 
+# this for admin part
 	def __str__(self):
 		return self.id
+
 
 class Customer(models.Model):
 
@@ -87,6 +121,6 @@ class Customer(models.Model):
 	phone = models.CharField(max_length=20, verbose_name='Номер телефона')
 	address = models.CharField(max_length=255, verbose_name='Адрес')
 
+# this for admin part
 	def __str__(self):
 		return "{} {}".format(self.user.first_name, self.user.last_name)
-
