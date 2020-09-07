@@ -1,5 +1,6 @@
 db.sqlite3
 mainapp/__init__.py
+mainapp/migrations/**
 mainapp/__pycache__/__init__.cpython-37.pyc
 mainapp/__pycache__/admin.cpython-37.pyc
 mainapp/__pycache__/models.cpython-37.pyc
