@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 ######Main Models#####
 #1. Category
 #2. Product
@@ -26,6 +27,10 @@ class Category(models.Model):
 
 class Product(models.Model):
 
+# 
+	class Meta:
+		abstract = True
+
 	# next line ForeignKey shows link to table with Categoties to curent Caregory for example: notebook, smartphone etc
 	# on_delete is requered option to shows what to do of delete obj
 	category = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.CASCADE)
@@ -47,7 +52,16 @@ class CartProduct(models.Model):
 	# next fielf with option related_name, we can do query set:
 	# cartpduct.related_cart.all()
 	cart = models.ForeignKey('Cart', verbose_name='Корзина', on_delete=models.CASCADE, related_name='related_product')
-	product = models.ForeignKey(Product, verbose_name='Товар', on_delete=models.CASCADE)
+	# we don't need line bellow and alter it for next tree lines
+	# product = models.ForeignKey(Product, verbose_name='Товар', on_delete=models.CASCADE)
+	content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+	object_id = models.PositiveIntegerField()
+	content_object = GenericForeignKey('content_type', 'object_id')
+# example of SQL queryset create new obj of CartProduct
+# p = NotebookProduct.objects.get(pk=1)
+# cp = CartProduct.objects.create(content_type=p)
+# in example above we got instance of Product and create new inst CatrProduct for curent Product
+# GenericForeignKey will take correct model and put as ForeignKey
 	qty = models.PositiveIntegerField(default=1)
 	final_price = models.DecimalField(max_digits=9, decimal_places=2, verbose_name='Общая цена')
 
@@ -76,11 +90,3 @@ class Customer(models.Model):
 	def __str__(self):
 		return "{} {}".format(self.user.first_name, self.user.last_name)
 
-class Specification(models.Model):
-
-	content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
-	object_id = models.PositiveIntegerField()
-	name = models.CharField(max_length=255, verbose_name='Имя товара для характеристик')
-
-	def __str___(self):
-		return "Характеристики для товара :{}".format(self.name)
