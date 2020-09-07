@@ -124,3 +124,9 @@ class Customer(models.Model):
 # this for admin part
 	def __str__(self):
 		return "{} {}".format(self.user.first_name, self.user.last_name)
+
+
+# the model is just example how to work with static files
+class SomeModel(models.Model):
+
+	image = models.ImageField(verbose_name='Изображение')
