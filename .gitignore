@@ -1,1 +1,7 @@
 db.sqlite3
+/mainapp/__init__.py
+/mainapp/tests.py
+/mainapp/__pycashe__
+/mainapp/migrations
+/shop/__pycashe__
+/shop/__init__.py
