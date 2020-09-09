@@ -21,10 +21,13 @@ from django.conf.urls.static import static
 
 urlpatterns = [
 	path('admin/', admin.site.urls),
-	path('', include('mainapp.urls'))
+	path('', include('mainapp.urls')) # include urls from our proj- mainapp
 ]
 
-
+# in debug mod we ll use our local content
+# Helper function to return a URL pattern for serving files in debug mode
+# static.static(prefix, view=django.views.static.serve, **kwargs)
 if settings.DEBUG:
 	urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 	urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
