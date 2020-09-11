@@ -1,7 +1,26 @@
+from PIL import Image
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
+# the import bellow helps add img file in model through shell
+from django.core.files import File
+# (InteractiveConsole)
+# >>> from mainapp.models import *
+# >>> a = NoteBook.objects.get(id=1)
+# >>> a
+# <NoteBook: Ноутбуки Lenovo IdeaPad 3 15IIL Platinum Grey>
+# >>> a.image
+# <ImageFieldFile: lenovo_ideapad_3_15iil_02.jpg>
+# >>> a.image.save('111.png', File(open('./2.png','rb')))
+# save for NoteBooks
+# Traceback (most recent call last):
+#   File "<console>", line 1, in <module>
+#   File "D:\PyCodingDjango\env\lib\site-packages\django\db\models\fields\files.py", line 93, in save
+#     self.instance.save()
+#   File "D:\PyCodingDjango\shop\mainapp\models.py", line 99, in save
+#     format(self.image.size/1024, self.MAX_IMG_SIZE/1024))
+# Exception: Изображение 288.5654296875 превышает 244.140625 Кб
 ######Main Models#####
 #1. Category
 #2. Product
@@ -15,6 +34,14 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 # Create your models here.
 
 User = get_user_model() # the line takes django model User
+
+
+class MinResolutionError(Exception):
+	pass
+
+
+class MaxResolutionError(Exception):
+	pass
 
 
 class LatestProductsManager:
@@ -38,7 +65,6 @@ class LatestProductsManager:
 		return products
 
 
-
 class LatestProducts:
 
 	objects = LatestProductsManager()
@@ -55,6 +81,10 @@ class Category(models.Model):
 
 
 class Product(models.Model):
+
+	NOTEBOOK_MIN_RESOLUTION = (400,400)
+	NOTEBOOK_MAX_RESOLUTION = (1500, 1100)
+	MAX_IMG_SIZE = 250000 # size in bits
 
 	class Meta:
 		abstract = True
@@ -73,6 +103,23 @@ class Product(models.Model):
 # this for admin part
 	def __str__(self):
 		return self.title
+
+	# redefinition of method save
+	def save(self,*args, **kwargs):
+		img = Image.open(self.image)
+		img_size = (img.width, img.height)
+		# if self.__class__.__name__ == "NoteBook": can be like this for diff models
+		if self.image.size > self.MAX_IMG_SIZE:
+			raise Exception('Изображение {} превышает {} Кб'.\
+				format(self.image.size/1024, self.MAX_IMG_SIZE/1024))
+		if img_size < self.NOTEBOOK_MIN_RESOLUTION:
+			raise MinResolutionError('Изображение меньше {}X{}'.\
+				format(*Product.NOTEBOOK_MIN_RESOLUTION))
+		elif img_size > self.NOTEBOOK_MAX_RESOLUTION:
+			raise MaxResolutionError('Изображение больше {}X{}'.\
+				format(*Product.NOTEBOOK_MAX_RESOLUTION))
+		super().save(*args,**kwargs)
+
 
 class NoteBook(Product):
 

@@ -1,6 +1,10 @@
 db.sqlite3
 mainapp/__init__.py
 mainapp/migrations/**
+/media
+/media/**
+/static_dev/**
+2.png
 mainapp/__pycache__
 mainapp/__pycache__/__init__.cpython-37.pyc
 mainapp/__pycache__/admin.cpython-37.pyc
